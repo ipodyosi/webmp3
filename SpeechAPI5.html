@@ -634,7 +634,7 @@ setTimeout((event) => {
                                               a.href = URL.createObjectURL(new Blob([data.buffer], {  type: 'audio/mp3' }));
                                             //  a.href = url;
                                             var fname;
-                                            if(ftext.value==""){
+                                            if(ftext.value===''){
                                               fname="noname.mp3"
                                             }else{
                                               fname=ftext.value+'.mp3'
