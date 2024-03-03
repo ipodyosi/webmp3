@@ -299,8 +299,8 @@
                 if (crossOriginIsolated) {
                 const buffer = new SharedArrayBuffer(16);
                 myWorker.postMessage(buffer);
-               // loglog.value = "MP3準備完了";
-                loglog.value = myWorker.postMessage(buffer);;//"MP3準備完了";
+                loglog.value = "MP3準備完了";
+              //  loglog.value = myWorker.postMessage(buffer);;//"MP3準備完了";
                 } else {
                 const buffer = new ArrayBuffer(16);
                 myWorker.postMessage(buffer);
