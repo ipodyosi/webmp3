@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <title>SpeechAPI</title>
+  <meta http-equiv="content-type" charset="Shift_JIS">
+ 
+
+<!-- ffmpeg -->
+  <script src="coi-serviceworker.js"></script>
+  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.8.3/dist/ffmpeg.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+<!-- ffmpeg -->
+<!-- https://lax7upk69ppsrpj2sn8k0g.on.drv.tw/www.spechy.com/ -->
+</head>
+<style>
+    .container{
+        display: flex;
+        width: 100%;
+        background-color: #aaa;
+ 
+        /*並び順*/
+        /*
+        flex-start：左寄せ（デフォルト）
+        flex-end：右寄せ
+        center： 中央寄せ
+        space-between：残り余白の均等割り 
+        space-around：左右余白 ＋ 均等割り
+        */
+        justify-content: space-around;
+        
+    }
+    .flex-item{
+        width: 50%;
+        
+    }
+    .item1{
+        background-color: white;
+    }
+    .item2{
+        background-color:white;
+    }
+    
+</style>
+
+
+
+<body>
+  
+ 
+ 
+    <div class="container">
+        <div class="flex-item item1">
+            <button style="background-color:red; border-color:red; color:white" id="start">録画対象選択</button>
+            <button style="background-color:blue; border-color:blue; color:white"id="record" disabled>録画開始</button>
+            <button id="download" disabled>録画ダウンロード</button>
+            <br>
+            <button style="background-color:black; border-color:black; color:white"id="teisi">再生停止</button> 
+            <br>
+       <!-- //ffmpeg      -->
+          
+            <audio id="output-audio" controls></audio>
+            <textarea id="logs" columns="20"></textarea>  
+            <br><br>
+       <!-- //::::::  -->
+            <label>↓ファイル名</label><br>
+            <textarea     cols="10" rows="2" style="background-color:lightblue" id="filetext"></textarea><br>
+          
+            <label>↓こちらに発言内容を入力します</label><br>
+            <textarea style="background-color:lightblue"cols="60" rows="10"  id="text"></textarea><br><br>
+            <label>↓言語を選択してください。</label><br>
+          
+            <button style="background-color:red; border-color:red; color:white"id="lan-btn1">日本語</button>
+            <button style="background-color:red; border-color:red; color:white"id="lan-btn2">英　語</button>
+            <button style="background-color:red; border-color:red; color:white"id="lan-btn3">全言語</button><br><br>
+          
+           <label>↓話者を選択してください。</label><br>
+          
+            <select id="voice-select"></select> <br><br>
+            <label>速度</label><br>
+            <input id="pi_input" type="range" min="0.5" max="2" value="1" step="0.1" />
+            <output id="value"></output><br>
+            <!-- <label>音程</label><br>
+            <input id="pitch_input" type="range" min="0.5" max="2" value="1" step="0.1" />
+            <output id="pitchvalue"></output> -->
+
+
+            <br><br>
+            <label>↓再生を押してください。</label><br>
+
+            <button id="speak-btn">再生</button><br>
+            
+            <textarea cols="10" rows="2" id="voice-text"></textarea>
+            <button style="background-color:black; border-color:black; color:white"id="owari">おわり</button> <br><br>
+
+            <label>************************************</label><br>
+            <label>↓VoiceVox話者を選択してください。</label><br>
+          
+            <select id="vv-select">
+              <option value="1">VOICEVOX:ずんだもん（あまあま）</option>
+              <option value="2">VOICEVOX:四国めたん（ノーマル）</option>
+              <option value="3">VOICEVOX:ずんだもん（ノーマル）</option>
+              <option value="4">VOICEVOX:四国めたん（セクシー）</option>
+              <option value="5">VOICEVOX:ずんだん（セクシー）</option>
+              <option value="6">VOICEVOX:四国めたん（ツンツン）</option>
+              <option value="7">VOICEVOX:ずんだもん（ツンツン）</option>
+              <option value="8">VOICEVOX:春日部つむぎ（ノーマル）</option>
+              <option value="9">VOICEVOX:波音リツ（ノーマル）</option>
+              <option value="10">VOICEVOX:雨晴はう（ノーマル）</option>
+              <option value="11">VOICEVOX:玄野武宏（ノーマル）</option>
+              <option value="12">VOICEVOX:白上虎太郎（ふつう）</option>
+              <option value="13">VOICEVOX:青山龍星（ノーマル）</option>
+              <option value="14">VOICEVOX:冥鳴ひまり（ノーマル）</option>
+              <option value="15">VOICEVOX:九州そら（あまあま）</option>
+              <option value="16">VOICEVOX:九州そら（ノーマル）</option>
+              <option value="17">VOICEVOX:九州そら（セクシー）</option>
+              <option value="18">VOICEVOX:九州そら（ツンツン）</option>
+              <option value="19">VOICEVOX:九州そら（ささやき）</option>
+              <option value="20">VOICEVOX:もち子(cv 明日葉よもぎ)（ノーマル）</option>
+              <option value="21">VOICEVOX:剣崎雌雄（ノーマル）</option>
+              <option value="22">VOICEVOX:ずんだもん（ささやき）</option>
+              <option value="23">VOICEVOX:WhiteCUL（ノーマル）</option>
+              <option value="24">VOICEVOX:WhiteCUL（たのしい）</option>
+              <option value="25">VOICEVOX:WhiteCUL（かなしい）</option>
+              <option value="26">VOICEVOX:WhiteCUL（びえーん）</option>
+              <option value="27">VOICEVOX:後鬼（人間ver.）</option>
+              <option value="28">VOICEVOX:後鬼（ぬいぐるみver.）</option>
+              <option value="29">VOICEVOX:No.7（ノーマル）</option>
+              <option value="30">VOICEVOX:No.7（アナウンス）</option>
+              <option value="31">VOICEVOX:No.7（読み聞かせ）</option>
+              <option value="32">VOICEVOX:白上虎太郎（わーい）</option>
+              <option value="33">VOICEVOX:白上虎太郎（びくびく）</option>
+              <option value="34">VOICEVOX:白上虎太郎（おこ）</option>
+              <option value="35">VOICEVOX:白上虎太郎（びえーん）</option>
+              <option value="36">VOICEVOX:四国めたん（ささやき）</option>
+              <option value="37">VOICEVOX:四国めたん（ヒソヒソ）</option>
+              <option value="38">VOICEVOX:ずんだもん（ヒソヒソ）</option>
+              <option value="39">VOICEVOX:玄野武宏（喜び）</option>
+              <option value="40">VOICEVOX:玄野武宏（ツンギレ）</option>
+              <option value="41">VOICEVOX:玄野武宏（悲しみ）</option>
+              <option value="42">VOICEVOX:ちび式じい（ノーマル）</option>
+              <option value="43">VOICEVOX:櫻歌ミコ（ノーマル）</option>
+              <option value="44">VOICEVOX:櫻歌ミコ（第二形態）</option>
+              <option value="45">VOICEVOX:櫻歌ミコ（ロリ）</option>
+              <option value="46">VOICEVOX:小夜/SAYO（ノーマル）</option>
+              <option value="47">VOICEVOX:ナースロボ＿タイプＴ（ノーマル）</option>
+              <option value="48">VOICEVOX:ナースロボ＿タイプＴ（楽々）</option>
+              <option value="49">VOICEVOX:ナースロボ＿タイプＴ（恐怖）</option>
+              <option value="50">VOICEVOX:ナーロボ＿タイプＴ（内緒話）</option>
+              <option value="51">VOICEVOX:†聖騎士 紅桜†（ノーマル）</option>
+              <option value="52">VOICEVOX:雀松朱司（ノーマル）</option>
+              <option value="53">VOICEVOX:麒ヶ島宗麟（ノーマル）</option>
+              <option value="54">VOICEVOX:春歌ナナ（ノーマル）</option>
+              <option value="55">VOICEVOX:猫使ア（ノーマル）</option>
+              <option value="56">VOICEVOX:猫使アル（おちつき）</option>
+              <option value="57">VOICEVOX:猫使アル（うきうき）</option>
+              <option value="58">VOICEVOX:猫使ビィ（ノーマル）</option>
+              <option value="59">VOICEVOX:猫使ビィ（おちつき）</option>
+              <option value="60">VOICEVOX:猫使ビィ（人見知り）</option>
+              <option value="61">VOICEVOX:中国うさぎ（ノーマル）</option>
+              <option value="62">VOICEVOX:中国うさぎ（おどろき）</option>
+              <option value="63">VOICEVOX:中国うさぎ（こわがり）</option>
+              <option value="64">VOICEVOX:中国うさぎ（へろへろ）</option>
+              <option value="65">VOICEVOX:波音リツ（クイー）</option>
+              <option value="66">VOICEVOX:もち子(cv 明日葉よもぎ)（セクシー／あん子）</option>
+              <option value="67">VOICEVOX:栗田まろん（ノーマル）</option>
+              <option value="68">VOICEVOX:あいえるたん（ノーマル）</option>
+              <option value="69">VOICEVOX:満別花丸（ノーマル）</option>
+              <option value="70">VOICEVOX:満別花丸（元気）</option>
+              <option value="71">VOICEVOX:満別花丸（ささやき）</option>
+              <option value="72">VOICEVOX:満別花丸（ぶりっ子）</option>
+              <option value="73">VOICEVOX:満別花丸（ボーイ）</option>
+              <option value="74">VOICEVOX:琴詠ニア（ノーマル）</option>
+              <option value="75">VOICEVOX:ずんだもん（ヘロヘロ）</option>
+              <option value="76">VOICEVOX:ずんだもん（なみだめ）</option>
+              <option value="77">VOICEVOX:もち子(cv 明日葉よもぎ)（泣き）</option>
+              <option value="78">VOICEVOX:もち子(cv 明日葉よもぎ)（怒り）</option>
+              <option value="79">VOICEVOX:もち子(cv 明日葉よもぎ)（喜び）</option>
+              <option value="80">VOICEVOX:もち子(cv 明日葉よもぎ)（のんびり）</option>
+              <option value="81">VOICEVOX:青山龍星（熱血）</option>
+              <option value="82">VOICEVOX:青山龍星（不機嫌）</option>
+              <option value="83">VOICEVOX:青山龍星（喜び）</option>
+              <option value="84">VOICEVOX:青山龍星（しっとり）</option>
+              <option value="85">VOICEVOX:青山龍星（かなしみ）</option>
+              <option value="86">VOICEVOX:青山龍星（囁き）</option>
+
+
+          </select> <br><br>
+            <button id="vspeak-btn">VoiceVox再生</button><br>
+             <audio controls id="audio"></audio><br>
+             <textarea   id="logtext"></textarea>
+
+          
+
+
+        </div>
+        <div class="flex-item item2">
+            <br><br><br>
+            <label style= "color:red">〇エクセルファイルを指定してください</label><br>
+            <input type="file" id="input" accept=".xlsx" ><br><br>
+            <button id="cp_Button">コピー</button><br>
+           
+            <select style="max-width: 800px"   id="excel-select"></select> <br><br><br><br><br><br>
+
+            <label>****************************************</label><br>
+  
+            <label> 【設定】</label><br>
+            <label style= "color:red">　１　</label>
+
+            <button style="background-color:red; border-color:red; color:white"id="lan-btn1">日本語</button>
+            <button style="background-color:red; border-color:red; color:white"id="lan-btn2">英　語</button>
+            <button style="background-color:red; border-color:red; color:white"id="lan-btn3">全言語</button>
+            <label style= "color:red">　選択</label><br>
+            <label style= "color:red">　２　話者を選択</label><br><br>
+
+            <label> 【発言内容】</label><br>
+            <label> （手入力）</label><br>
+            <label style= "color:blue">　１　ファイル名を入力</label><br>
+            <label style= "color:blue">　２　発言内容を入力</label><br>
+
+
+            <label> （エクセルから入力）</label><br>
+            <label style= "color:blue">　１　</label>
+            <button>ファイルの選択</button><br>
+            <label style= "color:blue">　２　発言を選択</label><br>
+            <label style= "color:blue">　３　</label>
+            <button>コピー</button>
+            <label style= "color:blue">-->（ファイル名、発言内容にコピーされる）</label><br><br>
+            <label> 【再生】</label><br>
+            <label style= "color:blue">　１　</label><button>再生</button><br><br>
+            <label> 【録音・ファイル作成】</label><br>
+            <label style= "color:red"> 　１　</label>
+            <button style="background-color:red; border-color:red; color:white" >録画対象選択</button>
+            <label style= "color:red"> ：画面全体－「画面全体」を選択ー「システムオーディオも共有」</label><br>
+            <label style= "color:red"> 　２　</label>
+            <button style="background-color:blue; border-color:blue; color:white">録画開始</button>
+            <label> -->(自動的にファイル作成)</label><br><br>
+ 
+        </div>
+       
+    </div>
+
+</body>
+
+</html>
+
+
+<script>
+//スクリプト開始
+  //変数の宣言
+  var loglog = document.getElementById('logs');
+  loglog.value='更新ボタンを押してください';
+  const text        = document.querySelector('#text')
+  const exceltext        = document.querySelector('#excel-text')
+  const voiceSelect = document.querySelector('#voice-select')
+  const excelSelect = document.querySelector('#excel-select')
+  const voicetext        = document.querySelector('#voice-text')
+  const ftext        = document.querySelector('#filetext')
+  const speakBtn    = document.querySelector('#speak-btn')
+  const lan1Btn    = document.querySelector('#lan-btn1')
+  const lan2Btn    = document.querySelector('#lan-btn2')
+  const lan3Btn    = document.querySelector('#lan-btn3')
+ // const rate = document.querySelector("#rate");
+  var LanStr='ja'
+
+  let mediaRecorder; 
+  let recordedBlobs;
+
+  const startButton = document.querySelector('button#start');
+  const recordButton = document.querySelector('button#record');
+  const downloadButton = document.querySelector('button#download');
+  const teisiButton = document.querySelector('button#teisi');
+  const audioCheckbox = document.querySelector('input#audio');
+    const copyButton = document.querySelector('button#cp_Button');
+    const vv_sp = document.querySelector('#vv-select')
+    const owari = document.querySelector('#owari')
+    
+    //ffmpeg
+                var date = new Date();
+                var fdate = date.toLocaleString('ja-JP').replace(/ /g,'-').replace(/\//g,'-').replace(/:/g,'-');
+                var outfname = 'output1-' + fdate + '.mp3'
+             //   loglog.value = '';
+                const outaudio = document.getElementById('output-audio');
+
+
+                const { createFFmpeg } = FFmpeg;
+                const ffmpeg = createFFmpeg({ log: true });
+                // const ffmpeg = createFFmpeg({
+                //   corePath: 'ffmpeg-core.js',
+                //   log: true
+                // });
+                (async()=>{
+                  if (!ffmpeg.isLoaded()) await ffmpeg.load();
+              })
+
+                
+                let kka;
+               const myWorker = new Worker("worker.js");
+                if (crossOriginIsolated) {
+                const buffer = new SharedArrayBuffer(16);
+                myWorker.postMessage(buffer);
+               // loglog.value = "MP3準備完了";
+                loglog.value = myWorker.postMessage(buffer);;//"MP3準備完了";
+                } else {
+                const buffer = new ArrayBuffer(16);
+                myWorker.postMessage(buffer);
+               // loglog.value = "22";
+                }
+
+
+    
+  //エクセルデータを格納  
+        var Aretu=[];
+        var Bretu=[];
+        var ABdat=0;
+    
+
+
+
+  startButton.onclick = startScreenSharing;
+  recordButton.onclick = toggleRecording;
+  downloadButton.onclick = downloadRecording;
+    copyButton.onclick = CopyHatugen;
+
+    const vspeakBtn    = document.querySelector('#vspeak-btn')
+    const logtext        = document.querySelector('#logtext')
+    const audio = document.querySelector('#audio')
+
+  // selectタグの中身を声の名前が入ったoptionタグで埋める
+ 
+  //音声スピード
+  const value = document.querySelector("#value");
+const input = document.querySelector("#pi_input");
+value.textContent = input.value;
+input.addEventListener("input", (event) => {
+  value.textContent = event.target.value;
+});
+
+  //音程
+//   const pitchvalue = document.querySelector("#pitchvalue");
+// const pitchinput = document.querySelector("#pitch_input");
+// pitchvalue.textContent = pitchinput.value;
+// pitchinput.addEventListener("input", (event) => {
+//   pitchvalue.textContent = event.target.value;
+ 
+// });
+//エクセルファイル読み込み
+document.getElementById('input').addEventListener('change', (e) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = e.target.result;
+        const workbook = XLSX.read(data, {type: 'binary'});
+       
+        const worksheet = workbook.Sheets['発言'];
+        const cells=worksheet['!ref'];
+        var Siti=cells.indexOf('B');
+        var celcnt=cells.length
+        var num=cells.slice(Siti+1,celcnt);
+       
+       // console.log(worksheet);
+       // fs.writeFileSync('test.csv', csv);
+       for (  var i = 2;  i <= num;  i++  ) {
+                var bb='B'+i;
+                var aa='A'+i;
+ 
+                const Bcell = worksheet[bb];
+                Bretu[i]=Bcell.v;
+                const Acell = worksheet[aa];
+               Aretu[i]=Acell.v;
+              var ABdata=i;
+              const option = document.createElement('option')
+              option.value = Aretu[i]+':'+Bretu[i]
+              option.text  = Aretu[i]+':'+Bretu[i] //　テンプレートリテラル (ES6)
+          //    option.setAttribute('selected', voice.default)
+              excelSelect.appendChild(option)
+
+       }
+        
+      };
+      reader.readAsBinaryString(e.target.files[0]);
+  
+    });
+
+//発言コピー
+function CopyHatugen(){
+  var kome=excelSelect.value.indexOf(':');
+ // var lenexcel=excelSelect.value.length;
+  var ff=excelSelect.value.slice(0,kome);
+  var tt=excelSelect.value.slice(kome+1);
+  var moji=tt.slice(0,4);
+  ftext.value=ff+'_'+moji;;
+  text.value=tt
+}
+//話者の選択
+function appendVoices() {
+  voicetext.value=''
+  owari.style.visibility = 'hidden';
+
+    // ①　使える声の配列を取得
+    // 配列の中身は SpeechSynthesisVoice オブジェクト
+    const voices = speechSynthesis.getVoices()
+    voiceSelect.innerHTML = ''
+    
+    voices.forEach(voice => { //　アロー関数 (ES6)
+      // 日本語と英語以外の声は選択肢に追加しない。
+      if(!voice.lang.match(LanStr)) return   //'ja|en'=日本英語    'ja||en'=all
+      const option = document.createElement('option')
+      option.value = voice.name
+      option.text  = `${voice.name} (${voice.lang})` //　テンプレートリテラル (ES6)
+      option.setAttribute('selected', voice.default)
+      voiceSelect.appendChild(option)
+      //colsole.log (voice.name)
+    });
+  }
+
+   
+
+
+
+  appendVoices()
+
+  // ② 使える声が追加されたときに着火するイベントハンドラ。
+  // Chrome は非同期に(一個ずつ)声を読み込むため必要。
+  speechSynthesis.onvoiceschanged = e => {
+   // appendVoices()
+  }
+
+
+  //再生ボタンを押したら
+  speakBtn.addEventListener('click', function() {
+  voicetext.value=''
+  owari.style.visibility = 'hidden';
+    // 発言を作成
+    const uttr = new SpeechSynthesisUtterance(text.value)
+    // ③ 選択された声を指定
+    uttr.voice = speechSynthesis
+      .getVoices()
+      .filter(voice => voice.name ===voiceSelect.value)[0]
+      uttr.rate = input.value;
+     // uttr.pitch =pitchinput.value;
+    // 発言を再生 (発言キュー発言に追加)
+    speechSynthesis.speak(uttr)
+   
+ 
+    // endイベントのコールバックを設定 
+    uttr.onend = function(event) {
+    voicetext.value='おわり'
+    owari.style.visibility = 'visible';
+  //　alert('Finished in ' + event.elapsedTime + ' seconds.');
+};
+    
+  })
+
+
+  //日本語、英語、全言語のボタンを押したら
+   lan1Btn.addEventListener('click', function() {
+        LanStr='ja'
+       appendVoices()
+   })
+   lan2Btn.addEventListener('click', function() {
+        LanStr='en'
+       appendVoices()
+   })
+   lan3Btn.addEventListener('click', function() {
+        LanStr='||'
+       appendVoices()
+   })
+
+
+//画面共有部分のオプション
+var displayMediaOptions = {
+            video: {
+              displaySurface:"monitor",  //window , browser , or monitor 
+              width:640
+            },
+            audio: true,
+          };
+
+//画面共有画面の表示
+   async function startScreenSharing() {
+   const screenStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+
+ //  let audioStream;
+ //  if (audioCheckbox.checked) {
+ //   audioStream = await navigator.mediaDevices.getUserMedia({audio: true});
+ //  } else {
+    audioStream = new MediaStream();
+ //  }
+
+   const tracks = [...screenStream.getTracks(), ...audioStream.getAudioTracks()]
+   const combinedStream = new MediaStream(tracks);
+
+   mediaRecorder = new MediaRecorder(combinedStream);
+   mediaRecorder.ondataavailable = (event) => {
+    if (event.data && event.data.size > 0) {
+     recordedBlobs.push(event.data);
+    }
+   };
+
+   recordButton.disabled = false; // 画面共有が開始されたら録画ボタンを有効にする
+    
+  }
+
+ 
+//音声の再生開始
+  function  SpeechStart() {
+  voicetext.value=''
+  owari.style.visibility = 'hidden';
+    // 発言を作成
+    const uttr = new SpeechSynthesisUtterance(text.value)
+    // ③ 選択された声を指定
+    uttr.voice = speechSynthesis
+      .getVoices()
+      .filter(voice => voice.name ===voiceSelect.value)[0]
+      uttr.rate = input.value;
+   //   uttr.pitch =pitchinput.value;
+    // 発言を再生 (発言キュー発言に追加)
+    speechSynthesis.speak(uttr)
+   
+ 
+    // endイベントのコールバックを設定 
+    uttr.onend = function(event) {
+    voicetext.value='おわり'
+    owari.style.visibility = 'visible';
+    setTimeout((event) => {
+      toggleRecording();
+    }, 500);
+   
+  //　alert('Finished in ' + event.elapsedTime + ' seconds.');
+  };
+  }
+
+  
+//録画開始ボタンを押す、表示
+  function toggleRecording() {
+   if (recordButton.textContent === '録画開始') {
+    startRecording();
+    recordButton.textContent = '録画停止';
+   } else {
+    stopRecording();
+
+ setTimeout((event) => {
+  downloadRecording() ;
+}, 2000);
+
+ 
+    recordButton.textContent = '録画開始';
+    downloadButton.disabled = false;
+   }
+  }
+
+
+//録画開始
+  function startRecording() {
+   recordedBlobs = [];
+   mediaRecorder.start();
+   downloadButton.disabled = true;
+setTimeout((event) => {
+ SpeechStart() ;
+}, 300);
+ //toggleRecording();
+ loglog.value='';
+  }
+
+ //録画停止
+  function stopRecording() {
+   mediaRecorder.stop();
+ 
+  }
+//ダウンロード
+  function downloadRecording() {
+        if(ftext.value===''){
+            const blob = new Blob(recordedBlobs, {type: 'video/webm'});
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = 'noname.webm';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => {
+           document.body.removeChild(a);
+           window.URL.revokeObjectURL(url);
+          }, 100);
+        }else{
+
+          const blob = new Blob(recordedBlobs, {type: 'video/webm'});
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+            //   a.href = url;
+            //   a.download = ftext.value+'.webm';
+            //   document.body.appendChild(a);
+            //   a.click();
+            //   setTimeout(() => {
+            //    document.body.removeChild(a);
+            //    window.URL.revokeObjectURL(url);
+            //   }, 100);
+
+                //FileReaderのインスタンスを作成する
+                //                var el2 = document.getElementById("file");
+      
+                //                el2.addEventListener( 'change', function(e) {
+                                
+                                    var result = a.target.files;//e.target.files[0];
+ 
+                                    var reader = new FileReader();
+                                
+                                //読み込んだファイルの中身を取得する
+                                reader.readAsDataURL( blob );
+
+                                //ファイルの中身を取得後に処理を行う
+                                reader.addEventListener( 'load', function() {
+
+                                    //ファイルの中身をエディター内に表示する
+                                    //console.log(reader.result);
+                                    (async () => {
+                                            await ffmpeg.load();
+                                            await ffmpeg.write('input.webm',reader.result);
+                                            await console.log('input webm write ended');
+                                            loglog.value='作成開始';
+                                          //  loglog.value = await 'input webm File write FS ended\n' + loglog.value;
+                                            await ffmpeg.run('-i input.webm ' + outfname);
+                                            await console.log('ffmpeg run ended');
+                                           // loglog.value = await 'input webm File convert output1 mp3 ended\n' + loglog.value;
+                                            data = await ffmpeg.read(outfname);
+                                            await console.log('read data ended');
+                                           // loglog.value = await 'output1 mp3 File set data ended\n' + loglog.value;
+
+                                            await ffmpeg.remove('input.webm');
+                                            await console.log('input.webm del ended');
+                                            //loglog.value = await 'input webm File delete FS ended\n' + loglog.value;
+
+                                            await ffmpeg.remove(outfname);
+                                            await console.log('output1.mp3 del ended');
+                                           // loglog.value = await 'output1 mp3 File delete FS ended\n' + loglog.value;
+
+                                            outaudio.src = URL.createObjectURL(new Blob([data.buffer], {
+                                            type: 'audio/mp3'
+                                            }));
+
+                                            
+                                           // var a = document.createElement('a');
+                                              a.href = URL.createObjectURL(new Blob([data.buffer], {  type: 'audio/mp3' }));
+                                            //  a.href = url;
+                                              a.download = ftext.value+'.mp3'
+                                          //    document.body.appendChild(a);
+                                              a.click();
+
+                                           
+
+                                            loglog.value = await '作成完了!!!\n' + loglog.value;
+                                           // msg = await alert('MP3変換完了。ダウンロードできます');
+
+                                    })();
+                                })
+                     //         })
+
+
+
+    
+       
+  }}
+
+ //停止ボタンを押したら
+ teisiButton.addEventListener('click', function() {
+      voicetext.value='おわり';
+      owari.style.visibility = 'visible';
+      ftext.value='';
+      speechSynthesis.cancel();
+      setTimeout(() => {
+          toggleRecording();
+        }, 500);
+   })
+  
+ //Voicevox Play
+ vspeakBtn.addEventListener('click', function() {
+    VoiceVoxMake();
+  })
+//voicevox make
+  async function VoiceVoxMake(){
+        let form = new FormData();
+        form.append("parameter", "parameter");
+        audio.src='';
+     //   var vv_sp;
+        const url = "https://api.tts.quest/v3/voicevox/synthesis?text="+text.value+ "&speaker=" + vv_sp.value + "&key=g49643w0d87737H";
+        fetch(url, {
+        　　　　　　　　method: 'POST',
+        　　　　　　　　body: form,
+        })
+        .then(response =>  response.text())
+        .then(data => {
+        console.log(data)
+        var newdata=data.replace(/\\|\\/g,"")
+        
+        var okcheck=newdata.slice(11,13);
+      //  logtext.value=data;
+       
+       setTimeout(() => {
+ 
+            if(okcheck=="tr"){
+                    var Siti=newdata.indexOf('mp3DownloadUrl');
+                    var Eiti = newdata.indexOf("audio.mp3");
+                    var SIti2 =Siti+17;// newdata.indexOf("audioStatusUrl")
+                    var Eiti2 = Eiti;//newdata.indexOf("status.json")
+                    var downURL=newdata.slice(SIti2,Eiti2+9);
+                    logtext.value=""
+                    setTimeout(() => {
+                      var vfile=ftext.value+'.mp3';
+                            fileDownloadFromUrl(newdata,vfile,downURL);
+                        //   logtext.value=data;
+                    }, 1000);
+             }else{
+                logtext.value="現在作成中です。少しお待ちください。"
+                var Siti=newdata.indexOf('retryAfter');
+                var Eiti = newdata.indexOf("}");
+                var SIti2 =Siti+12;
+                var downURL=newdata.slice(SIti2,Eiti);
+                var down=downURL*1000
+                setTimeout(() => {
+                   
+                    VoiceVoxMake();
+                }, down);
+             }
+      
+        }, 500);
+    })
+
+        
+    }
+    //voicevoxdownload
+
+    async function fileDownloadFromUrl(newdata,fileName, fileUrl) {
+        var SIti3 = newdata.indexOf("audioStatusUrl")
+        var Eiti3 = newdata.indexOf("wavDownloadUrl")
+      //  logtext.value=newdata;
+        var Js3 = newdata.slice(SIti3+17 ,Eiti3-3 )
+      //  logtext.value=Js3;
+   
+        let form = new FormData();
+        form.append("parameter", "parameter");
+        const url = Js3;
+        fetch(url, {
+                      method: 'POST',
+                      body: form,
+        })
+        .then(response =>  response.text())
+        .then(data2 => {
+        var okcheck=data2.slice(11 ,13);
+        setTimeout(() => {
+                if (okcheck="tr"){ 
+                 // setTimeout(() => {
+                  var xhr = new XMLHttpRequest();
+                  xhr.open('GET', fileUrl, true);
+                  xhr.responseType = 'arraybuffer';
+                  xhr.onload = function (e) {
+                      if (xhr.status === 200) {
+                        audio.src=fileUrl;
+                        logtext.value="完了";
+
+                    //     var a = document.createElement('a');
+                    //  //   a.href = URL.createObjectURL(new Blob([data.buffer], {  type: 'audio/mp3' }));
+                    //     a.href = fileUrl;
+                    //     a.download = fileName;
+                    //     a.click();
+
+                        
+
+
+
+                      } else {
+                       const d1 = new Date();
+                       while (true) {
+                          const d2 = new Date();
+                          if (d2 - d1 > 3000) {
+                            break;
+                          }
+                        }
+                        fileDownloadFromUrl(newdata,fileName, fileUrl)
+                    
+                       
+                       }
+                  };
+                  xhr.send();
+
+
+
+                  //  audio.src=fileUrl;
+                 
+                 
+                }else{
+                    logtext.value="再度実行してください";//fileDownloadFromUrl(newdata,"test.mp3",downURL);  
+                }
+        }, 2000);       
+
+
+
+     //   logtext.value=data2
+
+      
+    })
+  }
+
+
+
+  
+</script>
