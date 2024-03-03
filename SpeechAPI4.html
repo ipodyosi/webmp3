@@ -1,17 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
-
+<title>SpeechAPI</title>
 <head>
-  <title>SpeechAPI</title>
-  <meta http-equiv="content-type" charset="Shift_JIS">
- 
-
-<!-- ffmpeg -->
-  <script src="coi-serviceworker.js"></script>
-  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.8.3/dist/ffmpeg.min.js"></script>
+    <link href="style.css" rel="stylesheet" type="text/css" media="all">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-<!-- ffmpeg -->
-<!-- https://lax7upk69ppsrpj2sn8k0g.on.drv.tw/www.spechy.com/ -->
 </head>
 <style>
     .container{
@@ -28,7 +20,6 @@
         space-around：左右余白 ＋ 均等割り
         */
         justify-content: space-around;
-        
     }
     .flex-item{
         width: 50%;
@@ -46,7 +37,7 @@
 
 
 <body>
-  
+ 
  
  
     <div class="container">
@@ -56,13 +47,7 @@
             <button id="download" disabled>録画ダウンロード</button>
             <br>
             <button style="background-color:black; border-color:black; color:white"id="teisi">再生停止</button> 
-            <br>
-       <!-- //ffmpeg      -->
-          
-            <audio id="output-audio" controls></audio>
-            <textarea id="logs" columns="20"></textarea>  
             <br><br>
-       <!-- //::::::  -->
             <label>↓ファイル名</label><br>
             <textarea     cols="10" rows="2" style="background-color:lightblue" id="filetext"></textarea><br>
           
@@ -76,7 +61,7 @@
           
            <label>↓話者を選択してください。</label><br>
           
-            <select id="voice-select"></select> <br><br>
+            <select id="voice-select"></select> <br>
             <label>速度</label><br>
             <input id="pi_input" type="range" min="0.5" max="2" value="1" step="0.1" />
             <output id="value"></output><br>
@@ -250,8 +235,6 @@
 <script>
 //スクリプト開始
   //変数の宣言
-  var loglog = document.getElementById('logs');
-  loglog.value='更新ボタンを押してください';
   const text        = document.querySelector('#text')
   const exceltext        = document.querySelector('#excel-text')
   const voiceSelect = document.querySelector('#voice-select')
@@ -266,51 +249,16 @@
   var LanStr='ja'
 
   let mediaRecorder; 
-  let recordedBlobs;
+    let recordedBlobs;
 
-  const startButton = document.querySelector('button#start');
-  const recordButton = document.querySelector('button#record');
-  const downloadButton = document.querySelector('button#download');
-  const teisiButton = document.querySelector('button#teisi');
-  const audioCheckbox = document.querySelector('input#audio');
+    const startButton = document.querySelector('button#start');
+    const recordButton = document.querySelector('button#record');
+    const downloadButton = document.querySelector('button#download');
+    const teisiButton = document.querySelector('button#teisi');
+    const audioCheckbox = document.querySelector('input#audio');
     const copyButton = document.querySelector('button#cp_Button');
     const vv_sp = document.querySelector('#vv-select')
-    const owari = document.querySelector('#owari')
-    const vv_key        = document.querySelector('#vvkey')
-    
-    //ffmpeg
-                var date = new Date();
-                var fdate = date.toLocaleString('ja-JP').replace(/ /g,'-').replace(/\//g,'-').replace(/:/g,'-');
-                var outfname = 'output1-' + fdate + '.mp3'
-             //   loglog.value = '';
-                const outaudio = document.getElementById('output-audio');
-
-
-                const { createFFmpeg } = FFmpeg;
-                const ffmpeg = createFFmpeg({ log: true });
-                // const ffmpeg = createFFmpeg({
-                //   corePath: 'ffmpeg-core.js',
-                //   log: true
-                // });
-                (async()=>{
-                  if (!ffmpeg.isLoaded()) await ffmpeg.load();
-              })
-
-                
-                let kka;
-               const myWorker = new Worker("worker.js");
-                if (crossOriginIsolated) {
-                const buffer = new SharedArrayBuffer(16);
-                myWorker.postMessage(buffer);
-                loglog.value = "MP3準備完了";
-              //  loglog.value = myWorker.postMessage(buffer);;//"MP3準備完了";
-                } else {
-                const buffer = new ArrayBuffer(16);
-                myWorker.postMessage(buffer);
-               // loglog.value = "22";
-                }
-
-
+    const vvkey        = document.querySelector('#vvkey')
     
   //エクセルデータを格納  
         var Aretu=[];
@@ -320,9 +268,9 @@
 
 
 
-  startButton.onclick = startScreenSharing;
-  recordButton.onclick = toggleRecording;
-  downloadButton.onclick = downloadRecording;
+    startButton.onclick = startScreenSharing;
+    recordButton.onclick = toggleRecording;
+    downloadButton.onclick = downloadRecording;
     copyButton.onclick = CopyHatugen;
 
     const vspeakBtn    = document.querySelector('#vspeak-btn')
@@ -397,7 +345,6 @@ function CopyHatugen(){
 //話者の選択
 function appendVoices() {
   voicetext.value=''
-  owari.style.visibility = 'hidden';
 
     // ①　使える声の配列を取得
     // 配列の中身は SpeechSynthesisVoice オブジェクト
@@ -432,7 +379,6 @@ function appendVoices() {
   //再生ボタンを押したら
   speakBtn.addEventListener('click', function() {
   voicetext.value=''
-  owari.style.visibility = 'hidden';
     // 発言を作成
     const uttr = new SpeechSynthesisUtterance(text.value)
     // ③ 選択された声を指定
@@ -448,7 +394,6 @@ function appendVoices() {
     // endイベントのコールバックを設定 
     uttr.onend = function(event) {
     voicetext.value='おわり'
-    owari.style.visibility = 'visible';
   //　alert('Finished in ' + event.elapsedTime + ' seconds.');
 };
     
@@ -483,24 +428,24 @@ var displayMediaOptions = {
    async function startScreenSharing() {
    const screenStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
 
- //  let audioStream;
- //  if (audioCheckbox.checked) {
- //   audioStream = await navigator.mediaDevices.getUserMedia({audio: true});
- //  } else {
-    audioStream = new MediaStream();
- //  }
+  //    let audioStream;
+  //    if (audioCheckbox.checked) {
+  //      audioStream = await navigator.mediaDevices.getUserMedia({audio: true});
+  //    } else {
+        audioStream = new MediaStream();
+  //    }
 
-   const tracks = [...screenStream.getTracks(), ...audioStream.getAudioTracks()]
-   const combinedStream = new MediaStream(tracks);
+      const tracks = [...screenStream.getTracks(), ...audioStream.getAudioTracks()]
+      const combinedStream = new MediaStream(tracks);
 
-   mediaRecorder = new MediaRecorder(combinedStream);
-   mediaRecorder.ondataavailable = (event) => {
-    if (event.data && event.data.size > 0) {
-     recordedBlobs.push(event.data);
-    }
-   };
+      mediaRecorder = new MediaRecorder(combinedStream);
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+          recordedBlobs.push(event.data);
+        }
+      };
 
-   recordButton.disabled = false; // 画面共有が開始されたら録画ボタンを有効にする
+      recordButton.disabled = false;  // 画面共有が開始されたら録画ボタンを有効にする
     
   }
 
@@ -508,7 +453,6 @@ var displayMediaOptions = {
 //音声の再生開始
   function  SpeechStart() {
   voicetext.value=''
-  owari.style.visibility = 'hidden';
     // 発言を作成
     const uttr = new SpeechSynthesisUtterance(text.value)
     // ③ 選択された声を指定
@@ -524,7 +468,6 @@ var displayMediaOptions = {
     // endイベントのコールバックを設定 
     uttr.onend = function(event) {
     voicetext.value='おわり'
-    owari.style.visibility = 'visible';
     setTimeout((event) => {
       toggleRecording();
     }, 500);
@@ -533,137 +476,86 @@ var displayMediaOptions = {
   };
   }
 
-  
+    
 //録画開始ボタンを押す、表示
-  function toggleRecording() {
-   if (recordButton.textContent === '録画開始') {
-    startRecording();
-    recordButton.textContent = '録画停止';
-   } else {
-    stopRecording();
+    function toggleRecording() {
+      if (recordButton.textContent === '録画開始') {
+        startRecording();
+        recordButton.textContent = '録画停止';
+      } else {
+        stopRecording();
 
  setTimeout((event) => {
   downloadRecording() ;
 }, 2000);
 
  
-    recordButton.textContent = '録画開始';
-    downloadButton.disabled = false;
-   }
-  }
+        recordButton.textContent = '録画開始';
+        downloadButton.disabled = false;
+      }
+    }
 
 
 //録画開始
-  function startRecording() {
-   recordedBlobs = [];
-   mediaRecorder.start();
-   downloadButton.disabled = true;
+    function startRecording() {
+      recordedBlobs = [];
+      mediaRecorder.start();
+      downloadButton.disabled = true;
 setTimeout((event) => {
  SpeechStart() ;
 }, 300);
  //toggleRecording();
- loglog.value='';
-  }
+    }
 
  //録画停止
-  function stopRecording() {
-   mediaRecorder.stop();
+    function stopRecording() {
+      mediaRecorder.stop();
  
-  }
+    }
 //ダウンロード
-  function downloadRecording() {
-       
+    function downloadRecording() {
+        if(ftext.value===''){
 
-          const blob = new Blob(recordedBlobs, {type: 'video/webm'});
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.style.display = 'none';
-            //   a.href = url;
-            //   a.download = ftext.value+'.webm';
-            //   document.body.appendChild(a);
-            //   a.click();
-            //   setTimeout(() => {
-            //    document.body.removeChild(a);
-            //    window.URL.revokeObjectURL(url);
-            //   }, 100);
-
-                //FileReaderのインスタンスを作成する
-                //                var el2 = document.getElementById("file");
-      
-                //                el2.addEventListener( 'change', function(e) {
-                                
-                                    var result = a.target.files;//e.target.files[0];
- 
-                                    var reader = new FileReader();
-                                
-                                //読み込んだファイルの中身を取得する
-                                reader.readAsDataURL( blob );
-
-                                //ファイルの中身を取得後に処理を行う
-                                reader.addEventListener( 'load', function() {
-
-                                    //ファイルの中身をエディター内に表示する
-                                    //console.log(reader.result);
-                                    (async () => {
-                                            await ffmpeg.load();
-                                            await ffmpeg.write('input.webm',reader.result);
-                                            await console.log('input webm write ended');
-                                            loglog.value='作成開始';
-                                          //  loglog.value = await 'input webm File write FS ended\n' + loglog.value;
-                                            await ffmpeg.run('-i input.webm ' + outfname);
-                                            await console.log('ffmpeg run ended');
-                                           // loglog.value = await 'input webm File convert output1 mp3 ended\n' + loglog.value;
-                                            data = await ffmpeg.read(outfname);
-                                            await console.log('read data ended');
-                                           // loglog.value = await 'output1 mp3 File set data ended\n' + loglog.value;
-
-                                            await ffmpeg.remove('input.webm');
-                                            await console.log('input.webm del ended');
-                                            //loglog.value = await 'input webm File delete FS ended\n' + loglog.value;
-
-                                            await ffmpeg.remove(outfname);
-                                            await console.log('output1.mp3 del ended');
-                                           // loglog.value = await 'output1 mp3 File delete FS ended\n' + loglog.value;
-
-                                            outaudio.src = URL.createObjectURL(new Blob([data.buffer], {
-                                            type: 'audio/mp3'
-                                            }));
-
-                                            
-                                           // var a = document.createElement('a');
-                                              a.href = URL.createObjectURL(new Blob([data.buffer], {  type: 'audio/mp3' }));
-                                            //  a.href = url;
-                                            var fname;
-                                            if(ftext.value=""){
-                                              fname="noname.mp3"
-                                            }else{
-                                              fname=ftext.value+'.mp3'
-                                            }
-
-                                            
-                                            a.download = fname;
-                                          //    document.body.appendChild(a);
-                                              a.click();
-
-                                           
-
-                                            loglog.value = await '作成完了!!!\n' + loglog.value;
-                                           // msg = await alert('MP3変換完了。ダウンロードできます');
-
-                                    })();
-                                })
-                     //         })
+          
 
 
 
-    
-       
-  }
+               const blob = new Blob(recordedBlobs, {type: 'video/webm'});
+             const url = window.URL.createObjectURL(blob);
+             const a = document.createElement('a');
+             a.style.display = 'none';
+             a.href = url;
+             a.download = 'noname.webm';
+             document.body.appendChild(a);
+             a.click();
+             setTimeout(() => {
+               document.body.removeChild(a);
+               window.URL.revokeObjectURL(url);
+             }, 100);
+
+
+        
+
+        }else{
+
+             const blob = new Blob(recordedBlobs, {type: 'video/webm'});
+             const url = window.URL.createObjectURL(blob);
+             const a = document.createElement('a');
+             a.style.display = 'none';
+             a.href = url;
+             a.download = ftext.value+'.webm';
+             document.body.appendChild(a);
+             a.click();
+             setTimeout(() => {
+               document.body.removeChild(a);
+               window.URL.revokeObjectURL(url);
+             }, 100);
+      }
+    }
 
  //停止ボタンを押したら
  teisiButton.addEventListener('click', function() {
       voicetext.value='おわり';
-      owari.style.visibility = 'visible';
       ftext.value='';
       speechSynthesis.cancel();
       setTimeout(() => {
@@ -680,9 +572,14 @@ setTimeout((event) => {
         let form = new FormData();
         form.append("parameter", "parameter");
         audio.src='';
-    
-       const   url = "https://api.tts.quest/v3/voicevox/synthesis?text="+text.value+ "&speaker=" + vv_sp.value + "&key=" + vv_key.value;
-      
+     //   var vv_sp;
+        
+          const url = "https://api.tts.quest/v3/voicevox/synthesis?text="+text.value+ "&speaker=" + vv_sp.value + "&key="+vvkey.value;
+       
+     
+        
+        
+        
         fetch(url, {
         　　　　　　　　method: 'POST',
         　　　　　　　　body: form,
@@ -740,8 +637,8 @@ setTimeout((event) => {
         form.append("parameter", "parameter");
         const url = Js3;
         fetch(url, {
-                      method: 'POST',
-                      body: form,
+        　　　　　　　　method: 'POST',
+        　　　　　　　　body: form,
         })
         .then(response =>  response.text())
         .then(data2 => {
@@ -755,18 +652,7 @@ setTimeout((event) => {
                   xhr.onload = function (e) {
                       if (xhr.status === 200) {
                         audio.src=fileUrl;
-                        logtext.value="完了";
-
-                    //     var a = document.createElement('a');
-                    //  //   a.href = URL.createObjectURL(new Blob([data.buffer], {  type: 'audio/mp3' }));
-                    //     a.href = fileUrl;
-                    //     a.download = fileName;
-                    //     a.click();
-
-                        
-
-
-
+                        //  alert('OK');
                       } else {
                        const d1 = new Date();
                        while (true) {
@@ -776,7 +662,11 @@ setTimeout((event) => {
                           }
                         }
                         fileDownloadFromUrl(newdata,fileName, fileUrl)
-                    
+                    //    logtext.value="再度実行してください";
+                      //  VoiceVoxMake();
+                     
+                          // audio.src=fileUrl;
+                      // //  //   alert('NG');
                        
                        }
                   };
@@ -804,3 +694,4 @@ setTimeout((event) => {
 
   
 </script>
+
