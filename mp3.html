@@ -124,7 +124,7 @@ div#body-bk{
   var date = new Date();
   var fdate = date.toLocaleString('ja-JP').replace(/ /g,'-').replace(/\//g,'-').replace(/:/g,'-');
   var outfname = 'output1-' + fdate + '.mp3'
-  loglog.value = '';
+  loglog.value = 'ブラウザを更新してください。';
   const audio = document.getElementById('output-audio');
   const { createFFmpeg } = FFmpeg;
   const ffmpeg = createFFmpeg({ log: true });
@@ -141,22 +141,22 @@ div#body-bk{
         // HTMLのid="console"に対して文字列outstrを設定する
         loglog.value = outstr+"\n"+loglog.value;
     }
-    console.clear;
+   console.clear;
 
     
 }
 
-  // let kka;
-  //              const myWorker = new Worker("worker.js");
-  //               if (crossOriginIsolated) {
-  //               const buffer = new SharedArrayBuffer(16);
-  //               myWorker.postMessage(buffer);
-  //               loglog.value = "MP3準備完了"+"\n"+loglog.value;
-  //               } else {
-  //               const buffer = new ArrayBuffer(16);
-  //               myWorker.postMessage(buffer);
-  //              // loglog.value = "22";
-  //               }
+  let kka;
+               const myWorker = new Worker("worker.js");
+                if (crossOriginIsolated) {
+                const buffer = new SharedArrayBuffer(16);
+                myWorker.postMessage(buffer);
+                loglog.value = "MP3準備完了";
+                } else {
+                const buffer = new ArrayBuffer(16);
+                myWorker.postMessage(buffer);
+               // loglog.value = "22";
+                }
 
 
 
