@@ -54,13 +54,14 @@
             <button style="background-color:red; border-color:red; color:white" id="start">録画対象選択</button>
             <button style="background-color:blue; border-color:blue; color:white"id="record" disabled>録画開始</button>
             <button id="download" disabled>録画ダウンロード</button>
-            <br>
+            <br> <br>
+            <button id="speak-btn">再生のみ</button>
             <button style="background-color:black; border-color:black; color:white"id="teisi">再生停止</button> 
             <br>
        <!-- //ffmpeg      -->
           
             <audio id="output-audio" controls></audio>
-            <textarea id="logs" columns="20"></textarea>  
+            <!-- <textarea id="logs" columns="20"></textarea>   -->
             <br><br>
        <!-- //::::::  -->
             <label>↓ファイル名</label><br>
@@ -77,21 +78,17 @@
            <label>↓話者を選択してください。</label><br>
           
             <select id="voice-select"></select> <br><br>
-            <label>速度</label><br>
+            <label>速度</label>
             <input id="pi_input" type="range" min="0.5" max="2" value="1" step="0.1" />
             <output id="value"></output><br>
-            <!-- <label>音程</label><br>
-            <input id="pitch_input" type="range" min="0.5" max="2" value="1" step="0.1" />
-            <output id="pitchvalue"></output> -->
 
 
-            <br>
-            <label>↓再生を押してください。</label><br>
+            <br>    <br><br>
+        
 
-            <button id="speak-btn">再生</button><br>
             
-            <textarea cols="10" rows="2" id="voice-text"></textarea>
-            <button style="background-color:black; border-color:black; color:white"id="owari">おわり</button> <br><br>
+            
+
 
             <label>************************************</label><br>
             <label>↓VoiceVox話者を選択してください。</label><br>
@@ -186,11 +183,12 @@
 
 
           </select> <br><br>
-          <label>key</label>
-            <textarea   id="vvkey"></textarea><br>
+          
+            
             <button id="vspeak-btn">VoiceVox再生</button>
+            <textarea   id="vvkey">(key)</textarea><br>
              <audio controls id="audio"></audio><br>
-             <textarea   id="logtext"></textarea>
+           <!-- //  <textarea   id="logtext"></textarea> -->
 
           
 
@@ -202,7 +200,12 @@
             <input type="file" id="input" accept=".xlsx" ><br><br>
             <button id="cp_Button">コピー</button><br>
            
-            <select style="max-width: 800px"   id="excel-select"></select> <br><br><br><br><br><br>
+            <select style="max-width: 800px"   id="excel-select"></select> <br><br>
+            
+      <!-- コメント       -->
+            <textarea cols="60" rows="10" id="logs" style="background-color:yellowgreen"></textarea>
+            <button style="background-color:black; border-color:black; color:white"id="owari">おわり</button>
+            <br><br>
 
             <label>****************************************</label><br>
   
@@ -250,13 +253,13 @@
 <script>
 //スクリプト開始
   //変数の宣言
-  var loglog = document.getElementById('logs');
-  loglog.value='更新ボタンを押してください';
+ 
+ 
   const text        = document.querySelector('#text')
   const exceltext        = document.querySelector('#excel-text')
   const voiceSelect = document.querySelector('#voice-select')
   const excelSelect = document.querySelector('#excel-select')
-  const voicetext        = document.querySelector('#voice-text')
+  const loglog        = document.querySelector('#logs')
   const ftext        = document.querySelector('#filetext')
   const speakBtn    = document.querySelector('#speak-btn')
   const lan1Btn    = document.querySelector('#lan-btn1')
@@ -278,6 +281,9 @@
     const owari = document.querySelector('#owari')
     const vv_key        = document.querySelector('#vvkey')
     
+
+    loglog.value='更新ボタンを押してください'+'\n'+loglog.value;
+
     //ffmpeg
                 var date = new Date();
                 var fdate = date.toLocaleString('ja-JP').replace(/ /g,'-').replace(/\//g,'-').replace(/:/g,'-');
@@ -392,11 +398,12 @@ function CopyHatugen(){
   var tt=excelSelect.value.slice(kome+1);
   var moji=tt.slice(0,4);
   ftext.value=ff+'_'+moji;;
-  text.value=tt
+  text.value=tt;
+  loglog.value="";
 }
 //話者の選択
 function appendVoices() {
-  voicetext.value=''
+ // loglog.value='';
   owari.style.visibility = 'hidden';
 
     // ①　使える声の配列を取得
@@ -431,7 +438,7 @@ function appendVoices() {
 
   //再生ボタンを押したら
   speakBtn.addEventListener('click', function() {
-  voicetext.value=''
+ // loglog.value=''+'\n'+loglog.value;
   owari.style.visibility = 'hidden';
     // 発言を作成
     const uttr = new SpeechSynthesisUtterance(text.value)
@@ -447,7 +454,7 @@ function appendVoices() {
  
     // endイベントのコールバックを設定 
     uttr.onend = function(event) {
-    voicetext.value='おわり'
+    loglog.value='再生終了'+'\n'+loglog.value;
     owari.style.visibility = 'visible';
   //　alert('Finished in ' + event.elapsedTime + ' seconds.');
 };
@@ -507,7 +514,7 @@ var displayMediaOptions = {
  
 //音声の再生開始
   function  SpeechStart() {
-  voicetext.value=''
+ // loglog.value=''+'\n'+loglog.value;
   owari.style.visibility = 'hidden';
     // 発言を作成
     const uttr = new SpeechSynthesisUtterance(text.value)
@@ -523,7 +530,7 @@ var displayMediaOptions = {
  
     // endイベントのコールバックを設定 
     uttr.onend = function(event) {
-    voicetext.value='おわり'
+    loglog.value='再生終了'+'\n'+loglog.value;
     owari.style.visibility = 'visible';
     setTimeout((event) => {
       toggleRecording();
@@ -562,7 +569,7 @@ setTimeout((event) => {
  SpeechStart() ;
 }, 300);
  //toggleRecording();
- loglog.value='';
+ //loglog.value=''+'\n'+loglog.value;
   }
 
  //録画停止
@@ -608,7 +615,7 @@ setTimeout((event) => {
                                             await ffmpeg.load();
                                             await ffmpeg.write('input.webm',reader.result);
                                             await console.log('input webm write ended');
-                                            loglog.value='作成開始';
+                                            loglog.value='MP3作成開始';
                                           //  loglog.value = await 'input webm File write FS ended\n' + loglog.value;
                                             await ffmpeg.run('-i input.webm ' + outfname);
                                             await console.log('ffmpeg run ended');
@@ -647,7 +654,9 @@ setTimeout((event) => {
 
                                            
 
-                                            loglog.value = await '作成完了!!!\n' + loglog.value;
+                                            loglog.value = await 'MP3作成完了!!!\n' + loglog.value;
+
+
                                            // msg = await alert('MP3変換完了。ダウンロードできます');
 
                                     })();
@@ -662,7 +671,7 @@ setTimeout((event) => {
 
  //停止ボタンを押したら
  teisiButton.addEventListener('click', function() {
-      voicetext.value='おわり';
+      loglog.value='再生終了'+'\n' + loglog.value;
       owari.style.visibility = 'visible';
       ftext.value='';
       speechSynthesis.cancel();
@@ -703,7 +712,7 @@ setTimeout((event) => {
                     var SIti2 =Siti+17;// newdata.indexOf("audioStatusUrl")
                     var Eiti2 = Eiti;//newdata.indexOf("status.json")
                     var downURL=newdata.slice(SIti2,Eiti2+9);
-                    logtext.value=""
+                    loglog.value=""
                     setTimeout(() => {
                       var vfile=ftext.value+'.mp3';
                             fileDownloadFromUrl(newdata,vfile,downURL);
@@ -755,7 +764,7 @@ setTimeout((event) => {
                   xhr.onload = function (e) {
                       if (xhr.status === 200) {
                         audio.src=fileUrl;
-                        logtext.value="完了";
+                        loglog.value="VoiceVox作成完了";
 
                     //     var a = document.createElement('a');
                     //  //   a.href = URL.createObjectURL(new Blob([data.buffer], {  type: 'audio/mp3' }));
@@ -788,7 +797,7 @@ setTimeout((event) => {
                  
                  
                 }else{
-                    logtext.value="再度実行してください";//fileDownloadFromUrl(newdata,"test.mp3",downURL);  
+                    loglog.value="VoiceVox 再度再生してください";//fileDownloadFromUrl(newdata,"test.mp3",downURL);  
                 }
         }, 2000);       
 
