@@ -473,7 +473,7 @@ function appendVoices() {
  
     // endイベントのコールバックを設定 
     uttr.onend = function(event) {
-    loglog.value='再生終了'+'\n'+loglog.value;
+    loglog.value='再生終了';
     owari.style.visibility = 'visible';
   //　alert('Finished in ' + event.elapsedTime + ' seconds.');
 };
@@ -549,7 +549,7 @@ var displayMediaOptions = {
  
     // endイベントのコールバックを設定 
     uttr.onend = function(event) {
-    loglog.value='再生終了'+'\n'+loglog.value;
+    loglog.value='再生終了';
     owari.style.visibility = 'visible';
     setTimeout((event) => {
       toggleRecording();
@@ -690,7 +690,7 @@ setTimeout((event) => {
 
  //停止ボタンを押したら
  teisiButton.addEventListener('click', function() {
-      loglog.value='再生終了'+'\n' + loglog.value;
+      loglog.value='再生終了';
       owari.style.visibility = 'visible';
       ftext.value='';
       speechSynthesis.cancel();
