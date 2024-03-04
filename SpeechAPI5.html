@@ -389,6 +389,25 @@ document.getElementById('input').addEventListener('change', (e) => {
       reader.readAsBinaryString(e.target.files[0]);
   
     });
+//consple表示
+window.onload = function(){
+    // ブラウザ上に表示する文字列を保持する一時変数
+    let outstr = "";
+    // console.logの挙動
+    console.log = (...args) => {
+        for(let arg of args){
+            // console.logに入力された文字列を改行つきで保持
+            outstr = arg +"\n"+outstr;
+        }
+        // HTMLのid="console"に対して文字列outstrを設定する
+        loglog.value = outstr+"\n"+loglog.value;
+    }
+    console.clear;
+
+    
+}
+
+
 
 //発言コピー
 function CopyHatugen(){
