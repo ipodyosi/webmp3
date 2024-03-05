@@ -2,7 +2,8 @@
 <html lang="ja">
 <title>SpeechAPI</title>
 <head>
-    <link href="style.css" rel="stylesheet" type="text/css" media="all">
+    <!-- <link href="style.css" rel="stylesheet" type="text/css" media="all"> -->
+   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </head>
 <style>
@@ -172,7 +173,8 @@
 
           </select> <br><br>
           <label>key</label>
-            <textarea   id="vvkey"></textarea><br>
+            <textarea   id="vvkey"></textarea>
+            <label  style="color:white">g49643w0d87737H</label><br>
             <button id="vspeak-btn">VoiceVox再生</button>
              <audio controls id="audio"></audio><br>
              <textarea   id="logtext"></textarea>
@@ -652,6 +654,8 @@ setTimeout((event) => {
                   xhr.onload = function (e) {
                       if (xhr.status === 200) {
                         audio.src=fileUrl;
+                      //  myfunc(fileName,fileUrl);
+
                         //  alert('OK');
                       } else {
                        const d1 = new Date();
@@ -662,11 +666,7 @@ setTimeout((event) => {
                           }
                         }
                         fileDownloadFromUrl(newdata,fileName, fileUrl)
-                    //    logtext.value="再度実行してください";
-                      //  VoiceVoxMake();
-                     
-                          // audio.src=fileUrl;
-                      // //  //   alert('NG');
+                    
                        
                        }
                   };
@@ -690,7 +690,17 @@ setTimeout((event) => {
     })
   }
 
+  // function myfunc(filename, pathname){
 
+  //   var anchor = document.createElement('a');
+  //   anchor.download = filename;
+  //   var textnode = document.createTextNode("Click here to download!"); 
+  //   document.body.appendChild(anchor);
+  //   anchor.appendChild(textnode); 
+  //       anchor.href = pathname;
+  //      // anchor.click();
+  // }
+    
 
   
 </script>

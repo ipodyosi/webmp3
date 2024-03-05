@@ -186,7 +186,8 @@
           
             
             <button id="vspeak-btn">VoiceVox再生</button>
-            <textarea   id="vvkey">(key)</textarea><br>
+            <textarea   id="vvkey">(key)</textarea>
+            <label  style="color:white">g49643w0d87737H</label><br><br>
              <audio controls id="audio"></audio><br>
            <!-- //  <textarea   id="logtext"></textarea> -->
 
@@ -783,19 +784,7 @@ setTimeout((event) => {
                   xhr.onload = function (e) {
                       if (xhr.status === 200) {
                         audio.src=fileUrl;
-                        loglog.value="VoiceVox作成完了";
-
-                    //     var a = document.createElement('a');
-                    //  //   a.href = URL.createObjectURL(new Blob([data.buffer], {  type: 'audio/mp3' }));
-                    //     a.href = fileUrl;
-                    //     a.download = fileName;
-                    //     a.click();
-
-                        
-
-
-
-                      } else {
+                       } else {
                        const d1 = new Date();
                        while (true) {
                           const d2 = new Date();
@@ -805,7 +794,6 @@ setTimeout((event) => {
                         }
                         fileDownloadFromUrl(newdata,fileName, fileUrl)
                     
-                       
                        }
                   };
                   xhr.send();
