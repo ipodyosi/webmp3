@@ -129,19 +129,7 @@ div#body-bk{
   const { createFFmpeg } = FFmpeg;
   const ffmpeg = createFFmpeg({ log: true });
  
- // ページをreloadする方法
-// reloadの基本的な使い方
-function doReload() {
-
-// reloadメソッドによりページをリロード
-window.location.reload();
-}
-
-window.addEventListener('load', function () {
-
-// ページ表示完了した5秒後にリロード
-setTimeout(doReload, 2000);
-});
+ 
 
   window.onload = function(){
     // ブラウザ上に表示する文字列を保持する一時変数
