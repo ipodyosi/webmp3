@@ -63,7 +63,8 @@ div#body-bk{
 
 </style>
 <script src="coi-serviceworker.js"></script>
-<script src="./ffmpeg.min.js"></script>
+<!-- <script src="./ffmpeg.min.js"></script> -->
+// <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.9.4/dist/ffmpeg.min.js"></script>
   
 </head>
 
@@ -143,45 +144,25 @@ div#body-bk{
         // HTMLのid="console"に対して文字列outstrを設定する
         loglog.value = outstr+"\n"+loglog.value;
     }
-   console.clear;
-
-    
+  
+  console.clear;   
 }
 
-  let kka;
-               const myWorker = new Worker("worker.js");
-                if (crossOriginIsolated) {
-                const buffer = new SharedArrayBuffer(16);
-                myWorker.postMessage(buffer);
-                loglog.value = "MP3準備完了";
-                } else {
-                const buffer = new ArrayBuffer(16);
-                myWorker.postMessage(buffer);
-               // loglog.value = "22";
-                }
+  // let kka;
+  //              const myWorker = new Worker("worker.js");
+  //               if (crossOriginIsolated) {
+  //               const buffer = new SharedArrayBuffer(16);
+  //               myWorker.postMessage(buffer);
+  //               loglog.value = "MP3準備完了";
+  //               } else {
+  //               const buffer = new ArrayBuffer(16);
+  //               myWorker.postMessage(buffer);
+  //              // loglog.value = "22";
+  //               }
 
 
 
-//ファイル選択ボタン
 
-// let ffmpegjs =  Comlink.proxy(worker);
-// let result =  ffmpegjs({
-//    arguments: ['-y','-i', file.name, 'output.webm'],
-//    MEMFS: [{name: file.name, data: data}],
-//    stdin: Comlink.proxyValue(() => {}),
-//    onfilesready: Comlink.proxyValue((e) => {
-//      let data = e.MEMFS[0].data;
-//      output.src = URL.createObjectURL(new Blob([data]))
-//      console.log('ready', e)
-//    }),
-//    print: Comlink.proxyValue(function(data) { console.log(data); stdout += data + "\n"; }),
-//    printErr: Comlink.proxyValue(function(data) { console.log('error', data); stderr += data + "\n"; }),
-//    postRun: Comlink.proxyValue(function(result) { console.log('DONE', result); }),
-//    onExit: Comlink.proxyValue(function(code) {
-//      console.log("Process exited with code " + code);
-//      console.log(stdout);
-//    }),
-// });
 
 var el2 = document.getElementById("file");
  
@@ -201,28 +182,43 @@ el2.addEventListener( 'change', function(e) {
         //ファイルの中身をエディター内に表示する
         //console.log(reader.result);
         (async () => {
-              await ffmpeg.load();
-              await ffmpeg.write('input.webm',reader.result);
-              await console.log('input webm write ended');
-          //    loglog.value = await 'input webm File write FS ended\n' + loglog.value;
-              await ffmpeg.run('-i input.webm ' + outfname);
-              await console.log('ffmpeg run ended');
-          //    loglog.value = await 'input webm File convert output1 mp3 ended\n' + loglog.value;
-              data = await ffmpeg.read(outfname);
-              await console.log('read data ended');
-          //    loglog.value = await 'output1 mp3 File set data ended\n' + loglog.value;
+                   //   const transcode = async ({ target: { files } }) => {
+                    console.log(result)
+                      const name =`input.${result.type.split('/')[1]}`;
+                    //  const { name } =fileName;// files[0];
+                    //  console.log(name)
+                      await ffmpeg.load();
+                      ffmpeg.FS('writeFile', name, await fetchFile(result));
+                      await ffmpeg.run('-i', name,  'output.mp3');
+                      //await ffmpeg.run('-i', name, '-q:v', 0, 'output.mp4');
+                      const data = ffmpeg.FS('readFile', 'output.mp3');
+                      const video = document.getElementById('out-audio');
+                      video.src = URL.createObjectURL(new Blob([data.buffer], { type: 'audio/mp3' }));
+                  //  }
 
-              await ffmpeg.remove('input.webm');
-              await console.log('input.webm del ended');
-          //    loglog.value = await 'input webm File delete FS ended\n' + loglog.value;
 
-              await ffmpeg.remove(outfname);
-              await console.log('output1.mp3 del ended');
-          //    loglog.value = await 'output1 mp3 File delete FS ended\n' + loglog.value;
+              // await ffmpeg.load();
+              // await ffmpeg.write('input.webm',reader.result);
+              // await console.log('input webm write ended');
+              // loglog.value = await 'input webm File write FS ended\n' + loglog.value;
+              // await ffmpeg.run('-i input.webm ' + outfname);
+              // await console.log('ffmpeg run ended');
+              // loglog.value = await 'input webm File convert output1 mp3 ended\n' + loglog.value;
+              // data = await ffmpeg.read(outfname);
+              // await console.log('read data ended');
+              // loglog.value = await 'output1 mp3 File set data ended\n' + loglog.value;
 
-              audio.src = URL.createObjectURL(new Blob([data.buffer], {
-                type: 'audio/mp3'
-              }));
+              // await ffmpeg.remove('input.webm');
+              // await console.log('input.webm del ended');
+              // loglog.value = await 'input webm File delete FS ended\n' + loglog.value;
+
+              // await ffmpeg.remove(outfname);
+              // await console.log('output1.mp3 del ended');
+              // loglog.value = await 'output1 mp3 File delete FS ended\n' + loglog.value;
+
+              // audio.src = URL.createObjectURL(new Blob([data.buffer], {
+              //   type: 'audio/mp3'
+              // }));
 
                var a = document.createElement('a');
               a.href = URL.createObjectURL(new Blob([data.buffer], {  type: 'audio/mp3' }));
