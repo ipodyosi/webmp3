@@ -1,15 +1,51 @@
 <body>
-    <video id="player" controls></video>
-    <input type="file" id="uploader">
+    <video id="player" controls></video><br>
+     
+    <input type="file" id="uploader"><br><br>
+    <textarea id="logs" cols="60" rows="15"></textarea> 
     <script src="coi-serviceworker.js"></script>
     <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.10.0/dist/ffmpeg.min.js"></script>
     <script>
+      var loglog = document.getElementById('logs');
+      loglog.value = 'ブラウザを更新してください。';
       const { createFFmpeg, fetchFile } = FFmpeg;
       const ffmpeg = createFFmpeg({ log: true });
+
+      window.onload = function(){
+        // ブラウザ上に表示する文字列を保持する一時変数
+        let outstr = "";
+        // console.logの挙動
+        console.log = (...args) => {
+            for(let arg of args){
+                // console.logに入力された文字列を改行つきで保持
+                outstr = arg +"\n"+outstr;
+            }
+            // HTMLのid="console"に対して文字列outstrを設定する
+            loglog.value = outstr+"\n"+loglog.value;
+        }
+      
+      console.clear;   
+    }
+
+      let kka;
+                  const myWorker = new Worker("worker.js");
+                    if (crossOriginIsolated) {
+                    const buffer = new SharedArrayBuffer(16);
+                    myWorker.postMessage(buffer);
+                    loglog.value = "MP3準備完了";
+                    } else {
+                    const buffer = new ArrayBuffer(16);
+                    myWorker.postMessage(buffer);
+                  // loglog.value = "22";
+                    }
+
+
+
+
       const transcode = async ({ target: { files } }) => {
         const name =`input.${files[0].type.split('/')[1]}`;
       //  const { name } =fileName;// files[0];
-        console.log(files[0])
+      
         await ffmpeg.load();
         ffmpeg.FS('writeFile', name, await fetchFile(files[0]));
         await ffmpeg.run('-i', name,  'output.mp3');
