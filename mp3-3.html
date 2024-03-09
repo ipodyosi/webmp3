@@ -6,6 +6,10 @@
     <script src="coi-serviceworker.js"></script>
     <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.10.0/dist/ffmpeg.min.js"></script>
     <script>
+      window.onload = function(){
+        location.reload()
+        location.reload()
+      }
       var loglog = document.getElementById('logs');
       loglog.value = 'ブラウザを更新してください。';
       const { createFFmpeg, fetchFile } = FFmpeg;

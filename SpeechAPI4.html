@@ -3,7 +3,7 @@
 <title>SpeechAPI</title>
 <head>
     <!-- <link href="style.css" rel="stylesheet" type="text/css" media="all"> -->
-   
+    <script src="coi-serviceworker.js"></script> 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </head>
 <style>
@@ -173,8 +173,8 @@
 
           </select> <br><br>
           <label>key</label>
-            <textarea   id="vvkey"></textarea>
-            <label  style="color:white">g49643w0d87737H</label><br>
+            <!-- <textarea   id="vvkey"></textarea>
+            <label  style="color:white">g49643w0d87737H</label><br> -->
             <button id="vspeak-btn">VoiceVox再生</button>
              <audio controls id="audio"></audio><br>
              <textarea   id="logtext"></textarea>
@@ -576,7 +576,7 @@ setTimeout((event) => {
         audio.src='';
      //   var vv_sp;
         
-          const url = "https://api.tts.quest/v3/voicevox/synthesis?text="+text.value+ "&speaker=" + vv_sp.value + "&key="+vvkey.value;
+          const url = "https://api.tts.quest/v3/voicevox/synthesis?text="+text.value+ "&speaker=" + vv_sp.value + "&key=g49643w0d87737H";
        
      
         
@@ -594,7 +594,7 @@ setTimeout((event) => {
         var okcheck=newdata.slice(11,13);
       //  logtext.value=data;
        
-       setTimeout(() => {
+    //   setTimeout(() => {
  
             if(okcheck=="tr"){
                     var Siti=newdata.indexOf('mp3DownloadUrl');
@@ -603,11 +603,12 @@ setTimeout((event) => {
                     var Eiti2 = Eiti;//newdata.indexOf("status.json")
                     var downURL=newdata.slice(SIti2,Eiti2+9);
                     logtext.value=""
-                    setTimeout(() => {
+                    wait(3)
+                 //   setTimeout(() => {
                       var vfile=ftext.value+'.mp3';
                             fileDownloadFromUrl(newdata,vfile,downURL);
                         //   logtext.value=data;
-                    }, 1000);
+                 //   }, 3000);
              }else{
                 logtext.value="現在作成中です。少しお待ちください。"
                 var Siti=newdata.indexOf('retryAfter');
@@ -621,7 +622,7 @@ setTimeout((event) => {
                 }, down);
              }
       
-        }, 500);
+      //  }, 500);
     })
 
         
@@ -645,14 +646,17 @@ setTimeout((event) => {
         .then(response =>  response.text())
         .then(data2 => {
         var okcheck=data2.slice(11 ,13);
-        setTimeout(() => {
+      //  setTimeout(() => {
                 if (okcheck="tr"){ 
                  // setTimeout(() => {
                   var xhr = new XMLHttpRequest();
                   xhr.open('GET', fileUrl, true);
                   xhr.responseType = 'arraybuffer';
+                 
                   xhr.onload = function (e) {
                       if (xhr.status === 200) {
+                    
+                       // wait(3);
                         audio.src=fileUrl;
                       //  myfunc(fileName,fileUrl);
 
@@ -665,6 +669,7 @@ setTimeout((event) => {
                             break;
                           }
                         }
+                       
                         fileDownloadFromUrl(newdata,fileName, fileUrl)
                     
                        
@@ -673,14 +678,14 @@ setTimeout((event) => {
                   xhr.send();
 
 
-
+                 // VoiceVoxMake();
                   //  audio.src=fileUrl;
                  
                  
                 }else{
                     logtext.value="再度実行してください";//fileDownloadFromUrl(newdata,"test.mp3",downURL);  
                 }
-        }, 2000);       
+      //  }, 2000);       
 
 
 
@@ -689,6 +694,10 @@ setTimeout((event) => {
       
     })
   }
+
+  function wait(second) {
+    return new Promise(resolve => setTimeout(resolve, 1000 * second));
+}
 
   // function myfunc(filename, pathname){
 
