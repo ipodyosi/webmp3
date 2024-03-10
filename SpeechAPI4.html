@@ -4,7 +4,8 @@
 <head>
     <!-- <link href="style.css" rel="stylesheet" type="text/css" media="all"> -->
     <script src="./coi-serviceworker.js"></script> 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="./TtsQuestV3Voicevox.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </head>
 <style>
     .container{
@@ -79,7 +80,7 @@
             <textarea cols="10" rows="2" id="voice-text"></textarea>
             <button style="background-color:black; border-color:black; color:white"id="owari">おわり</button> <br><br>
 
-            <!-- <label>************************************</label><br>
+             <label>************************************</label><br> 
             <label>↓VoiceVox話者を選択してください。</label><br>
           
             <select id="vv-select">
@@ -174,10 +175,10 @@
           </select> <br><br>
           <label>key</label>
             <textarea   id="vvkey"></textarea>
-            <label  style="color:white">g49643w0d87737H</label><br> -->
-            <!-- <button id="vspeak-btn">VoiceVox再生</button>
+            <label  style="color:white">g49643w0d87737H</label><br> 
+            <button id="vspeak-btn">VoiceVox再生</button>
              <audio controls id="audio"></audio><br>
-             <textarea   id="logtext"></textarea> -->
+             <textarea   id="logtext"></textarea>
 
           
 
@@ -571,125 +572,140 @@ setTimeout((event) => {
   })
 //voicevox make
   async function VoiceVoxMake(){
-        let form = new FormData();
-        form.append("parameter", "parameter");
-        audio.src='';
-     //   var vv_sp;
+   // var speakerId = 1; // VOICEVOX:ずんだもん（あまあま）
+          //  var text = document.getElementById('text').value;
+            var ttsQuestApiKey = 'g49643w0d87737H' // optional
+            var audio2 = new TtsQuestV3Voicevox(vv_sp.value, text.value, ttsQuestApiKey);
+            setTimeout(() => {
+           
+               soundPlay(audio2.src);
+              
+            }, 3000);
+            }
+
+            const soundPlay = function(url) {
+            audio.onerror = function() {
+                // エラー時の処理
+                console.log("再生できませんでした");
+                setTimeout(() => {
+                  VoiceVoxMake();
+                }, 3000);
+                
+            }
+            // URL設定
+
+           audio.src = url;
+            // 再生(できないときはエラーに行く)
+            audio.play();
+            
+        }
+
+
+
+
+
+
+
+
+
+
+
+//         let form = new FormData();
+//         form.append("parameter", "parameter");
+//         audio.src='';
+//      //   var vv_sp;
         
-          const url = "https://api.tts.quest/v3/voicevox/synthesis?text="+text.value+ "&speaker=" + vv_sp.value + "&key=g49643w0d87737H";
+//           const url = "https://api.tts.quest/v3/voicevox/synthesis?text="+text.value+ "&speaker=" + vv_sp.value + "&key=g49643w0d87737H";
        
      
         
         
         
-        fetch(url, {
-        　　　　　　　　method: 'POST',
-        　　　　　　　　body: form,
-        })
-        .then(response =>  response.text())
-        .then(data => {
-        console.log(data)
-        var newdata=data.replace(/\\|\\/g,"")
+//         fetch(url, {
+//         　　　　　　　　method: 'POST',
+//         　　　　　　　　body: form,
+//         })
+//         .then(response =>  response.text())
+//         .then(data => {
+//         console.log(data)
+//         var newdata=data.replace(/\\|\\/g,"")
         
-        var okcheck=newdata.slice(11,13);
-      //  logtext.value=data;
+//         var okcheck=newdata.slice(11,13);
+//       //  logtext.value=data;
        
-    //   setTimeout(() => {
+//       setTimeout(() => {
  
-            if(okcheck=="tr"){
-                    var Siti=newdata.indexOf('mp3DownloadUrl');
-                    var Eiti = newdata.indexOf("audio.mp3");
-                    var SIti2 =Siti+17;// newdata.indexOf("audioStatusUrl")
-                    var Eiti2 = Eiti;//newdata.indexOf("status.json")
-                    var downURL=newdata.slice(SIti2,Eiti2+9);
-                    logtext.value=""
-                    wait(3)
-                 //   setTimeout(() => {
-                      var vfile=ftext.value+'.mp3';
-                            fileDownloadFromUrl(newdata,vfile,downURL);
-                        //   logtext.value=data;
-                 //   }, 3000);
-             }else{
-                logtext.value="現在作成中です。少しお待ちください。"
-                var Siti=newdata.indexOf('retryAfter');
-                var Eiti = newdata.indexOf("}");
-                var SIti2 =Siti+12;
-                var downURL=newdata.slice(SIti2,Eiti);
-                var down=downURL*1000
-                setTimeout(() => {
-                   
-                    VoiceVoxMake();
-                }, down);
-             }
-      
-      //  }, 500);
-    })
-
+//  if(okcheck=="tr"){
+//          var Siti=newdata.indexOf('mp3DownloadUrl');
+//          var Eiti = newdata.indexOf("audio.mp3");
+//          var SIti2 =Siti+17;// newdata.indexOf("audioStatusUrl")
+//          var Eiti2 = Eiti;//newdata.indexOf("status.json")
+//          var downURL=newdata.slice(SIti2,Eiti2+9);
+//          logtext.value=""
+//          setTimeout(() => {
+//                  fileDownloadFromUrl(newdata,"test.mp3",downURL);
+//              //   logtext.value=data;
+//          }, 1000);
+//   }else{
+//      logtext.value="現在作成中です。少しお待ちください。"
+//      var Siti=newdata.indexOf('retryAfter');
+//      var Eiti = newdata.indexOf("}");
+//      var SIti2 =Siti+12;
+//      var downURL=newdata.slice(SIti2,Eiti);
+//      var down=downURL*1000
+//      setTimeout(() => {
         
-    }
-    //voicevoxdownload
+//          VoiceVoxMake();
+//      }, down);
+//   }
 
-    async function fileDownloadFromUrl(newdata,fileName, fileUrl) {
-        var SIti3 = newdata.indexOf("audioStatusUrl")
-        var Eiti3 = newdata.indexOf("wavDownloadUrl")
-      //  logtext.value=newdata;
-        var Js3 = newdata.slice(SIti3+17 ,Eiti3-3 )
-      //  logtext.value=Js3;
-   
-        let form = new FormData();
-        form.append("parameter", "parameter");
-        const url = Js3;
-        fetch(url, {
-        　　　　　　　　method: 'POST',
-        　　　　　　　　body: form,
-        })
-        .then(response =>  response.text())
-        .then(data2 => {
-        var okcheck=data2.slice(11 ,13);
-      //  setTimeout(() => {
-                if (okcheck="tr"){ 
-                 // setTimeout(() => {
-                  var xhr = new XMLHttpRequest();
-                  xhr.open('GET', fileUrl, true);
-                  xhr.responseType = 'arraybuffer';
-                  wait(3);
-                  xhr.onload = function (e) {
-                      if (xhr.status === 200) {
-                    
-                       // wait(3);
-                        audio.src=fileUrl;
-                        logtext.value="作成完了"
-                      //  myfunc(fileName,fileUrl);
-
-                        //  alert('OK');
-                      } else {
-                       const d1 = new Date();
-                       wait(3)
-                       
-                        fileDownloadFromUrl(newdata,fileName, fileUrl)
-                    
-                       
-                       }
-                  };
-                  xhr.send();
+// }, 500);
+// })
 
 
-                 // VoiceVoxMake();
-                  //  audio.src=fileUrl;
-                 
-                 
-                }else{
-                    logtext.value="再度実行してください";//fileDownloadFromUrl(newdata,"test.mp3",downURL);  
-                }
-      //  }, 2000);       
+// }
+
+// async function fileDownloadFromUrl(newdata,fileName, fileUrl) {
+// var SIti3 = newdata.indexOf("audioStatusUrl")
+// var Eiti3 = newdata.indexOf("wavDownloadUrl")
+// //  logtext.value=newdata;
+// var Js3 = newdata.slice(SIti3+17 ,Eiti3-3 )
+// //  logtext.value=Js3;
+
+// let form = new FormData();
+// form.append("parameter", "parameter");
+// const url = Js3;
+// fetch(url, {
+// 　　　　　　　　method: 'POST',
+// 　　　　　　　　body: form,
+// })
+// .then(response =>  response.text())
+// .then(data2 => {
+// var okcheck=data2.slice(11 ,13);
+// setTimeout(() => {
+//      if (okcheck="tr"){
+
+//          audio.src=fileUrl;
+//      }else{
+//          //fileDownloadFromUrl(newdata,"test.mp3",downURL);  
+//      }
+//  }, 2000);       
 
 
 
-     //   logtext.value=data2
+// //   logtext.value=data2
 
-      
-    })
-  }
+
+// })
+
+// function play() {
+//     var speakerId = 1; // VOICEVOX:ずんだもん（あまあま）
+//     var text = document.getElementById('text').value;
+//     var ttsQuestApiKey = '' // optional
+//     var audio2 = new TtsQuestV3Voicevox(speakerId, text, ttsQuestApiKey);
+//     audio2.play();
+//     }
+
 
   function wait(second) {
     return new Promise(resolve => setTimeout(resolve, 1000 * second));
