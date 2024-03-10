@@ -656,7 +656,7 @@ setTimeout((event) => {
                   xhr.onload = function (e) {
                       if (xhr.status === 200) {
                     
-                       // wait(3);
+                        wait(3);
                         audio.src=fileUrl;
                         logtext.value="作成完了"
                       //  myfunc(fileName,fileUrl);
@@ -664,12 +664,7 @@ setTimeout((event) => {
                         //  alert('OK');
                       } else {
                        const d1 = new Date();
-                       while (true) {
-                          const d2 = new Date();
-                          if (d2 - d1 > 3000) {
-                            break;
-                          }
-                        }
+                       wait(3)
                        
                         fileDownloadFromUrl(newdata,fileName, fileUrl)
                     
