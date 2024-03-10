@@ -3,7 +3,7 @@
 <title>SpeechAPI</title>
 <head>
     <!-- <link href="style.css" rel="stylesheet" type="text/css" media="all"> -->
-    <script src="coi-serviceworker.js"></script> 
+    <script src="./coi-serviceworker.js"></script> 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </head>
 <style>
@@ -652,11 +652,11 @@ setTimeout((event) => {
                   var xhr = new XMLHttpRequest();
                   xhr.open('GET', fileUrl, true);
                   xhr.responseType = 'arraybuffer';
-                 
+                  wait(3);
                   xhr.onload = function (e) {
                       if (xhr.status === 200) {
                     
-                        wait(3);
+                       // wait(3);
                         audio.src=fileUrl;
                         logtext.value="作成完了"
                       //  myfunc(fileName,fileUrl);
