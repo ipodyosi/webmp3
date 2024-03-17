@@ -608,7 +608,7 @@ setTimeout((event) => {
 
           const blob = new Blob(recordedBlobs, {type: 'video/webm'});
           const url = window.URL.createObjectURL(blob);
-          outaudio.src=url;
+      //    outaudio.src=url;
           const a = document.createElement('a');
           a.style.display = 'none';
             //   a.href = url;
@@ -634,13 +634,13 @@ setTimeout((event) => {
 
                                 //ファイルの中身を取得後に処理を行う
                                 reader.addEventListener( 'load', function() {
-                                  const name = `input.${url.type.split('/')[1]}`;
+                                  const name =reader.result;// `input.${result.type.split('/')[1]}`;
                                     //ファイルの中身をエディター内に表示する
-                                    //console.log(reader.result);
+                                    console.log(reader.result);
                                     (async () => {
                                       await ffmpeg.load();
                                       
-                                      ffmpeg.FS('writeFile', name, await fetchFile(url));
+                                      ffmpeg.FS('writeFile', name, await fetchFile(reader));
                                       await ffmpeg.run('-i', name,  'output.mp3');
                                       //await ffmpeg.run('-i', name, '-q:v', 0, 'output.mp4');
                                       const data = ffmpeg.FS('readFile', 'output.mp3');
