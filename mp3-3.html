@@ -1,7 +1,16 @@
 <body>
-  <audio id="player" controls></audio><br>
+  <video id="player" controls></video><br>
    
   <input type="file" id="uploader"><br><br>
+  <div>
+    <input type="radio" id="a_radio" name="drone" value="aa_radio" checked />
+    <label for="aa_radio">Audio</label>
+  </div>
+
+  <div>
+    <input type="radio" id="v_radio" name="drone" value="vv_radio" />
+    <label for="vv_radio">Video</label>
+  </div>
   <textarea id="logs" cols="60" rows="15"></textarea> 
   <script src="coi-serviceworker.js"></script>
   <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.10.0/dist/ffmpeg.min.js"></script>
@@ -10,6 +19,7 @@
       location.reload()
       location.reload()
     }
+   // const outaudio = document.getElementById('player');
     var loglog = document.getElementById('logs');
     loglog.value = 'ブラウザを更新してください。';
     const { createFFmpeg, fetchFile } = FFmpeg;
@@ -43,26 +53,58 @@
                 // loglog.value = "22";
                   }
 
-
+        let avRadio = document.getElementsByName('drone');
+        let len = avRadio.length;
+        avRadio[0].checked = true;  
+        let checkValue = '';            
 
 
     const transcode = async ({ target: { files } }) => {
       const name =`input.${files[0].type.split('/')[1]}`;
-    //  const { name } =fileName;// files[0];
-    
+  
+//radio
+        for (let i = 0; i < len; i++){
+            if (avRadio.item(i).checked){
+              checkValue = avRadio.item(i).value;
+            }
+          }
+          //console.log('選択されているのは ' + checkValue + ' です');
+ 
+          const outaudio = document.getElementById('player');
+//--radio
+//audio
+    if (checkValue=='aa_radio'){      
       await ffmpeg.load();
       ffmpeg.FS('writeFile', name, await fetchFile(files[0]));
       await ffmpeg.run('-i', name,  'output.mp3');
       //await ffmpeg.run('-i', name, '-q:v', 0, 'output.mp4');
       const data = ffmpeg.FS('readFile', 'output.mp3');
-  //    const video = document.getElementById('player');
-  //    video.src = URL.createObjectURL(new Blob([data.buffer], { type: 'audio/mp3' }));
+      outaudio.src = URL.createObjectURL(new Blob([data.buffer], {
+                                            type: 'audio/mp3'
+                                            }));
 
       var a = document.createElement('a');
             a.href = URL.createObjectURL(new Blob([data.buffer], {  type: 'audio/mp3' }));
             a.download = files[0].name+'.mp3'
             a.click();
             location.reload()
+//video
+      }else{
+      await ffmpeg.load();
+      ffmpeg.FS('writeFile', name, await fetchFile(files[0]));
+      await ffmpeg.run('-i', name, '-q:v', 0, 'output.mp4');
+          //  await ffmpeg.run('-i', name, 'output.mp4');
+      const data = ffmpeg.FS('readFile', 'output.mp4');
+      outaudio.src = URL.createObjectURL(new Blob([data.buffer], {
+                                            type: 'video/mp4'
+                                            }));
+                                                  
+      var a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([data.buffer], {  type: 'video/mp4' }));
+            a.download = files[0].name+'.mp4'
+            a.click();
+            location.reload()  
+    }
     }
 
     document.getElementById('uploader').addEventListener('change', transcode);
