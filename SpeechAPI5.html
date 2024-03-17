@@ -8,7 +8,7 @@
 
 <!-- ffmpeg -->
   <script src="coi-serviceworker.js"></script>
-  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.8.3/dist/ffmpeg.min.js"></script>
+  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.10.0/dist/ffmpeg.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 <!-- ffmpeg -->
 <!-- https://lax7upk69ppsrpj2sn8k0g.on.drv.tw/www.spechy.com/ -->
@@ -608,6 +608,7 @@ setTimeout((event) => {
 
           const blob = new Blob(recordedBlobs, {type: 'video/webm'});
           const url = window.URL.createObjectURL(blob);
+          outaudio.src=url;
           const a = document.createElement('a');
           a.style.display = 'none';
             //   a.href = url;
@@ -627,63 +628,31 @@ setTimeout((event) => {
                                     var result = a.target.files;//e.target.files[0];
  
                                     var reader = new FileReader();
-                                
+                                  
                                 //読み込んだファイルの中身を取得する
                                 reader.readAsDataURL( blob );
 
                                 //ファイルの中身を取得後に処理を行う
                                 reader.addEventListener( 'load', function() {
-
+                                  const name = `input.${url.type.split('/')[1]}`;
                                     //ファイルの中身をエディター内に表示する
                                     //console.log(reader.result);
                                     (async () => {
-                                            await ffmpeg.load();
-                                            await ffmpeg.write('input.webm',reader.result);
-                                            await console.log('input webm write ended');
-                                            loglog.value='MP3作成開始';
-                                          //  loglog.value = await 'input webm File write FS ended\n' + loglog.value;
-                                            await ffmpeg.run('-i input.webm ' + outfname);
-                                            await console.log('ffmpeg run ended');
-                                           // loglog.value = await 'input webm File convert output1 mp3 ended\n' + loglog.value;
-                                            data = await ffmpeg.read(outfname);
-                                            await console.log('read data ended');
-                                           // loglog.value = await 'output1 mp3 File set data ended\n' + loglog.value;
+                                      await ffmpeg.load();
+                                      
+                                      ffmpeg.FS('writeFile', name, await fetchFile(url));
+                                      await ffmpeg.run('-i', name,  'output.mp3');
+                                      //await ffmpeg.run('-i', name, '-q:v', 0, 'output.mp4');
+                                      const data = ffmpeg.FS('readFile', 'output.mp3');
+                                      // outaudio.src = URL.createObjectURL(new Blob([data.buffer], {
+                                      //                                       type: 'audio/mp3'
+                                      //                                       }));
 
-                                            await ffmpeg.remove('input.webm');
-                                            await console.log('input.webm del ended');
-                                            //loglog.value = await 'input webm File delete FS ended\n' + loglog.value;
-
-                                            await ffmpeg.remove(outfname);
-                                            await console.log('output1.mp3 del ended');
-                                           // loglog.value = await 'output1 mp3 File delete FS ended\n' + loglog.value;
-
-                                            outaudio.src = URL.createObjectURL(new Blob([data.buffer], {
-                                            type: 'audio/mp3'
-                                            }));
-
-                                            
-                                           // var a = document.createElement('a');
-                                              a.href = URL.createObjectURL(new Blob([data.buffer], {  type: 'audio/mp3' }));
-                                            //  a.href = url;
-                                            var fname;
-                                            if(ftext.value===''){
-                                              fname="noname.mp3"
-                                            }else{
-                                              fname=ftext.value+'.mp3'
-                                            }
-
-                                            
-                                            a.download = fname;
-                                          //    document.body.appendChild(a);
-                                              a.click();
-
-                                           
-
-                                            loglog.value = await 'MP3作成完了!!!\n' + loglog.value;
-
-
-                                           // msg = await alert('MP3変換完了。ダウンロードできます');
-
+                                      var a = document.createElement('a');
+                                            a.href = URL.createObjectURL(new Blob([data.buffer], {  type: 'audio/mp3' }));
+                                            a.download = files[0].name+'.mp3'
+                                            a.click();
+                                            location.reload()
                                     })();
                                 })
                      //         })

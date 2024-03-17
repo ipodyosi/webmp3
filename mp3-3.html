@@ -1,8 +1,8 @@
 <body>
-  <video id="player" controls></video><br>
+  <!-- <audio id="player" controls></audio><br> -->
    
   <input type="file" id="uploader"><br><br>
-  <div>
+  <!-- <div>
     <input type="radio" id="a_radio" name="drone" value="aa_radio" checked />
     <label for="aa_radio">Audio</label>
   </div>
@@ -10,7 +10,7 @@
   <div>
     <input type="radio" id="v_radio" name="drone" value="vv_radio" />
     <label for="vv_radio">Video</label>
-  </div>
+  </div> -->
   <textarea id="logs" cols="60" rows="15"></textarea> 
   <script src="coi-serviceworker.js"></script>
   <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.10.0/dist/ffmpeg.min.js"></script>
@@ -19,7 +19,7 @@
       location.reload()
       location.reload()
     }
-   // const outaudio = document.getElementById('player');
+  //  const outaudio = document.getElementById('player');
     var loglog = document.getElementById('logs');
     loglog.value = 'ブラウザを更新してください。';
     const { createFFmpeg, fetchFile } = FFmpeg;
@@ -46,34 +46,34 @@
                   if (crossOriginIsolated) {
                   const buffer = new SharedArrayBuffer(16);
                   myWorker.postMessage(buffer);
-                  loglog.value = "MP3準備完了";
+                  loglog.value = "変換準備完了";
                   } else {
                   const buffer = new ArrayBuffer(16);
                   myWorker.postMessage(buffer);
                 // loglog.value = "22";
                   }
 
-        let avRadio = document.getElementsByName('drone');
-        let len = avRadio.length;
-        avRadio[0].checked = true;  
-        let checkValue = '';            
+        // let avRadio = document.getElementsByName('drone');
+        // let len = avRadio.length;
+        // avRadio[0].checked = true;  
+        // let checkValue = '';            
 
 
     const transcode = async ({ target: { files } }) => {
       const name =`input.${files[0].type.split('/')[1]}`;
   
 //radio
-        for (let i = 0; i < len; i++){
-            if (avRadio.item(i).checked){
-              checkValue = avRadio.item(i).value;
-            }
-          }
-          //console.log('選択されているのは ' + checkValue + ' です');
+        // for (let i = 0; i < len; i++){
+        //     if (avRadio.item(i).checked){
+        //       checkValue = avRadio.item(i).value;
+        //     }
+        //   }
+        //   //console.log('選択されているのは ' + checkValue + ' です');
  
-          const outaudio = document.getElementById('player');
+        //   const outaudio = document.getElementById('player');
 //--radio
 //audio
-    if (checkValue=='aa_radio'){      
+    // if (checkValue=='aa_radio'){      
       await ffmpeg.load();
       ffmpeg.FS('writeFile', name, await fetchFile(files[0]));
       await ffmpeg.run('-i', name,  'output.mp3');
@@ -89,22 +89,23 @@
             a.click();
             location.reload()
 //video
-      }else{
-      await ffmpeg.load();
-      ffmpeg.FS('writeFile', name, await fetchFile(files[0]));
-      await ffmpeg.run('-i', name, '-q:v', 0, 'output.mp4');
-          //  await ffmpeg.run('-i', name, 'output.mp4');
-      const data = ffmpeg.FS('readFile', 'output.mp4');
-      // outaudio.src = URL.createObjectURL(new Blob([data.buffer], {
-      //                                       type: 'video/mp4'
-      //                                       }));
+    //   }else{
+    //   await ffmpeg.load();
+    //   ffmpeg.FS('writeFile', name, await fetchFile(files[0]));
+    //  // await ffmpeg.run('-i', name, '-q:v', 0, 'output.mp4');
+      
+    //   await ffmpeg.run('-i', name, '-s', '1280x720','output.mp4');
+    //   const data = ffmpeg.FS('readFile', 'output.mp4');
+    //   // outaudio.src = URL.createObjectURL(new Blob([data.buffer], {
+    //   //                                       type: 'video/mp4'
+    //   //                                       }));
                                                   
-      var a = document.createElement('a');
-            a.href = URL.createObjectURL(new Blob([data.buffer], {  type: 'video/mp4' }));
-            a.download = files[0].name+'.mp4'
-            a.click();
-            location.reload()  
-    }
+    //   var a = document.createElement('a');
+    //         a.href = URL.createObjectURL(new Blob([data.buffer], {  type: 'video/mp4' }));
+    //         a.download = files[0].name+'.mp4'
+    //         a.click();
+    //         location.reload()  
+    // }
     }
 
     document.getElementById('uploader').addEventListener('change', transcode);
