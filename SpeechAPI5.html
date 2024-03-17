@@ -634,13 +634,13 @@ setTimeout((event) => {
 
                                 //ファイルの中身を取得後に処理を行う
                                 reader.addEventListener( 'load', function() {
-                                  const name =reader.result;// `input.${result.type.split('/')[1]}`;
+                                  const name =result;// `input.${result.type.split('/')[1]}`;
                                     //ファイルの中身をエディター内に表示する
-                                    console.log(reader.result);
+                                //    console.log(url);
                                     (async () => {
                                       await ffmpeg.load();
                                       
-                                      ffmpeg.FS('writeFile', name, await fetchFile(reader));
+                                      ffmpeg.FS('writeFile', name, await fetchFile(reader.result));
                                       await ffmpeg.run('-i', name,  'output.mp3');
                                       //await ffmpeg.run('-i', name, '-q:v', 0, 'output.mp4');
                                       const data = ffmpeg.FS('readFile', 'output.mp3');
