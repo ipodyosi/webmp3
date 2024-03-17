@@ -79,9 +79,9 @@
       await ffmpeg.run('-i', name,  'output.mp3');
       //await ffmpeg.run('-i', name, '-q:v', 0, 'output.mp4');
       const data = ffmpeg.FS('readFile', 'output.mp3');
-      outaudio.src = URL.createObjectURL(new Blob([data.buffer], {
-                                            type: 'audio/mp3'
-                                            }));
+      // outaudio.src = URL.createObjectURL(new Blob([data.buffer], {
+      //                                       type: 'audio/mp3'
+      //                                       }));
 
       var a = document.createElement('a');
             a.href = URL.createObjectURL(new Blob([data.buffer], {  type: 'audio/mp3' }));
@@ -95,9 +95,9 @@
       await ffmpeg.run('-i', name, '-q:v', 0, 'output.mp4');
           //  await ffmpeg.run('-i', name, 'output.mp4');
       const data = ffmpeg.FS('readFile', 'output.mp4');
-      outaudio.src = URL.createObjectURL(new Blob([data.buffer], {
-                                            type: 'video/mp4'
-                                            }));
+      // outaudio.src = URL.createObjectURL(new Blob([data.buffer], {
+      //                                       type: 'video/mp4'
+      //                                       }));
                                                   
       var a = document.createElement('a');
             a.href = URL.createObjectURL(new Blob([data.buffer], {  type: 'video/mp4' }));
