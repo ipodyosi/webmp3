@@ -581,6 +581,8 @@ setTimeout((event) => {
           //  var text = document.getElementById('text').value;
             var ttsQuestApiKey = 'g49643w0d87737H' // optional
             var audio2 = new TtsQuestV3Voicevox(vv_sp.value, text.value, ttsQuestApiKey);
+            
+            audio2.play
             setTimeout(() => {
            
                soundPlay(audio2.src);
